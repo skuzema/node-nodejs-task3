@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { getUsers } from '../controllers/userController';
+import { urlNotFound, getUsers } from '../controllers/userController';
 import { URL } from '../data/constants';
 
 export function handleRequest(req: IncomingMessage, res: ServerResponse) {
@@ -9,5 +9,7 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
 
   if (url && url === URL.users && method === 'GET') {
     getUsers(req, res);
+  } else {
+    urlNotFound(req, res);
   }
 }
