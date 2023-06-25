@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, validate as uuid_validate } from 'uuid';
 import { IUser } from '../models/types';
 import { STATUS_CODE, MESSAGE } from '../data/constants';
 
@@ -9,6 +9,27 @@ export function getUsers(req: IncomingMessage, res: ServerResponse) {
   // throw new Error();
   res.statusCode = STATUS_CODE.success;
   res.end(JSON.stringify(users));
+}
+
+export function getUserById(
+  req: IncomingMessage,
+  res: ServerResponse,
+  userId: string | undefined
+) {
+  if (!userId || !uuid_validate(userId)) {
+    res.statusCode = STATUS_CODE.bad_request;
+    res.end(JSON.stringify({ message: MESSAGE.invalid_uuid }));
+  } else {
+    const user = users.find((u) => u.id === userId);
+
+    if (!user) {
+      res.statusCode = STATUS_CODE.not_found;
+      res.end(JSON.stringify({ message: MESSAGE.user_not_found }));
+    } else {
+      res.statusCode = STATUS_CODE.success;
+      res.end(JSON.stringify(user));
+    }
+  }
 }
 
 export function createUser(req: IncomingMessage, res: ServerResponse) {

@@ -1,6 +1,7 @@
 export const URL = {
   base_url: '/api',
   users: '/api/users',
+  user_id: '/api/users/',
 };
 
 export const STATUS_CODE = {
@@ -12,9 +13,11 @@ export const STATUS_CODE = {
 };
 
 export const MESSAGE = {
-  bad_request:'Required fields are missing',
+  bad_request: 'Required fields are missing',
   not_found: 'Endpoint not found',
   internal_error: 'Internal Server Error',
+  invalid_uuid: 'Invalid user ID',
+  user_not_found: 'User not found',
 };
 
 export const METHOD = {
