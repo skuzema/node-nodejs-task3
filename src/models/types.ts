@@ -4,3 +4,9 @@ export interface IUser {
   age: number;
   hobbies: string[];
 }
+
+export interface IUserDto {
+  username: string;
+  age: number;
+  hobbies: string[];
+}

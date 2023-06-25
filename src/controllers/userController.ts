@@ -1,7 +1,8 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { v4 as uuidv4, validate as uuid_validate } from 'uuid';
-import { IUser } from '../models/types';
+import { IUser, IUserDto } from '../models/types';
 import { STATUS_CODE, MESSAGE } from '../data/constants';
+import { utils } from '../utils';
 
 const users: IUser[] = [];
 
@@ -41,19 +42,11 @@ export function createUser(req: IncomingMessage, res: ServerResponse) {
 
   req.on('end', () => {
     try {
-      const { username, age, hobbies } = JSON.parse(body) as {
-        username: string;
-        age: number;
-        hobbies: string[];
-      };
+      const { username, age, hobbies } = JSON.parse(body) as IUserDto;
       if (!username || !age || !hobbies) {
         res.statusCode = STATUS_CODE.bad_request;
         res.end(JSON.stringify({ message: MESSAGE.bad_request }));
-      } else if (
-        typeof username !== 'string' ||
-        typeof age !== 'number' ||
-        !Array.isArray(hobbies)
-      ) {
+      } else if (utils.chkUserFields(username, age, hobbies)) {
         res.statusCode = STATUS_CODE.bad_request;
         res.end(JSON.stringify({ message: MESSAGE.invalid_data }));
       } else {
@@ -94,20 +87,11 @@ export function updateUser(
 
       req.on('end', () => {
         try {
-          const { username, age, hobbies } = JSON.parse(body) as {
-            username: string;
-            age: number;
-            hobbies: string[];
-          };
-
+          const { username, age, hobbies } = JSON.parse(body) as IUserDto;
           if (!username || !age || !hobbies) {
             res.statusCode = STATUS_CODE.bad_request;
             res.end(JSON.stringify({ message: MESSAGE.bad_request }));
-          } else if (
-            typeof username !== 'string' ||
-            typeof age !== 'number' ||
-            !Array.isArray(hobbies)
-          ) {
+          } else if (utils.chkUserFields(username, age, hobbies)) {
             res.statusCode = STATUS_CODE.bad_request;
             res.end(JSON.stringify({ message: MESSAGE.invalid_data }));
           } else {

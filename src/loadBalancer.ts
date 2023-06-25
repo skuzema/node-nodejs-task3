@@ -30,9 +30,6 @@ if (cluster.isPrimary) {
 } else {
   const server = createServer((req: IncomingMessage, res: ServerResponse) => {
     try {
-			console.log(
-        `REquest to worker is now connected to `
-      );
       handleRequest(req, res);
     } catch (error) {
       res.statusCode = STATUS_CODE.internal_error;
