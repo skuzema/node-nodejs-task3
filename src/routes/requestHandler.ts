@@ -1,7 +1,12 @@
 import { IncomingMessage, ServerResponse } from 'http';
+import { getUsers } from '../controllers/userController';
 
 export function handleRequest(req: IncomingMessage, res: ServerResponse) {
+  const { method, url } = req;
+
   res.setHeader('Content-Type', 'application/json');
-  res.writeHead(200);
-  res.end('Empty user list');
+
+  if (url && url === '/api/users' && method === 'GET') {
+    getUsers(req, res);
+  }
 }
