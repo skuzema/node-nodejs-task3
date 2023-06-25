@@ -7,6 +7,7 @@ export const URL = {
 export const STATUS_CODE = {
   success: 200,
   created: 201,
+  no_content: 204,
   bad_request: 400,
   not_found: 404,
   internal_error: 500,
@@ -24,4 +25,5 @@ export const METHOD = {
   get: 'GET',
   post: 'POST',
   put: 'PUT',
+  delete: 'DELETE',
 };

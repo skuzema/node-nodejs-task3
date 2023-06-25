@@ -122,6 +122,28 @@ export function updateUser(
   }
 }
 
+export function deleteUser(
+  req: IncomingMessage,
+  res: ServerResponse,
+  userId: string | undefined
+) {
+  if (!userId || !uuid_validate(userId)) {
+    res.statusCode = STATUS_CODE.bad_request;
+    res.end(JSON.stringify({ message: MESSAGE.invalid_uuid }));
+  } else {
+    const userIndex = users.findIndex((u) => u.id === userId);
+
+    if (userIndex === -1) {
+      res.statusCode = STATUS_CODE.not_found;
+      res.end(JSON.stringify({ message: MESSAGE.user_not_found }));
+    } else {
+      users.splice(userIndex, 1);
+      res.statusCode = STATUS_CODE.no_content;
+      res.end();
+    }
+  }
+}
+
 export function urlNotFound(req: IncomingMessage, res: ServerResponse) {
   res.statusCode = STATUS_CODE.not_found;
   res.end(JSON.stringify({ message: MESSAGE.not_found }));
