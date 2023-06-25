@@ -46,10 +46,16 @@ export function createUser(req: IncomingMessage, res: ServerResponse) {
         age: number;
         hobbies: string[];
       };
-
       if (!username || !age || !hobbies) {
         res.statusCode = STATUS_CODE.bad_request;
         res.end(JSON.stringify({ message: MESSAGE.bad_request }));
+      } else if (
+        typeof username !== 'string' ||
+        typeof age !== 'number' ||
+        !Array.isArray(hobbies)
+      ) {
+        res.statusCode = STATUS_CODE.bad_request;
+        res.end(JSON.stringify({ message: MESSAGE.invalid_data }));
       } else {
         const id = uuidv4();
         const newUser: IUser = { id, username, age, hobbies };
@@ -60,11 +66,7 @@ export function createUser(req: IncomingMessage, res: ServerResponse) {
       }
     } catch (error) {
       res.statusCode = STATUS_CODE.bad_request;
-      res.end(
-        JSON.stringify({
-          message: error instanceof Error ? error.name : MESSAGE.internal_error,
-        })
-      );
+      res.end(JSON.stringify({ message: MESSAGE.invalid_data }));
     }
   });
 }
@@ -101,6 +103,13 @@ export function updateUser(
           if (!username || !age || !hobbies) {
             res.statusCode = STATUS_CODE.bad_request;
             res.end(JSON.stringify({ message: MESSAGE.bad_request }));
+          } else if (
+            typeof username !== 'string' ||
+            typeof age !== 'number' ||
+            !Array.isArray(hobbies)
+          ) {
+            res.statusCode = STATUS_CODE.bad_request;
+            res.end(JSON.stringify({ message: MESSAGE.invalid_data }));
           } else {
             const updatedUser: IUser = { id: userId, username, age, hobbies };
             users[userIndex] = updatedUser;
@@ -110,12 +119,7 @@ export function updateUser(
           }
         } catch (error) {
           res.statusCode = STATUS_CODE.bad_request;
-          res.end(
-            JSON.stringify({
-              message:
-                error instanceof Error ? error.name : MESSAGE.internal_error,
-            })
-          );
+          res.end(JSON.stringify({ message: MESSAGE.invalid_data }));
         }
       });
     }

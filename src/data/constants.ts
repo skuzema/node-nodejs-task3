@@ -18,6 +18,7 @@ export const MESSAGE = {
   not_found: 'Endpoint not found',
   internal_error: 'Internal Server Error',
   invalid_uuid: 'Invalid user ID',
+  invalid_data: 'Invalid data',
   user_not_found: 'User not found',
 };
 
