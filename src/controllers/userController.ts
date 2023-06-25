@@ -40,24 +40,86 @@ export function createUser(req: IncomingMessage, res: ServerResponse) {
   });
 
   req.on('end', () => {
-    const { username, age, hobbies } = JSON.parse(body) as {
-      username: string;
-      age: number;
-      hobbies: string[];
-    };
+    try {
+      const { username, age, hobbies } = JSON.parse(body) as {
+        username: string;
+        age: number;
+        hobbies: string[];
+      };
 
-    if (!username || !age || !hobbies) {
+      if (!username || !age || !hobbies) {
+        res.statusCode = STATUS_CODE.bad_request;
+        res.end(JSON.stringify({ message: MESSAGE.bad_request }));
+      } else {
+        const id = uuidv4();
+        const newUser: IUser = { id, username, age, hobbies };
+        users.push(newUser);
+
+        res.statusCode = STATUS_CODE.created;
+        res.end(JSON.stringify(newUser));
+      }
+    } catch (error) {
       res.statusCode = STATUS_CODE.bad_request;
-      res.end(JSON.stringify({ message: MESSAGE.bad_request }));
-    } else {
-      const id = uuidv4();
-      const newUser: IUser = { id, username, age, hobbies };
-      users.push(newUser);
-
-      res.statusCode = STATUS_CODE.created;
-      res.end(JSON.stringify(newUser));
+      res.end(
+        JSON.stringify({
+          message: error instanceof Error ? error.name : MESSAGE.internal_error,
+        })
+      );
     }
   });
+}
+
+export function updateUser(
+  req: IncomingMessage,
+  res: ServerResponse,
+  userId: string | undefined
+) {
+  if (!userId || !uuid_validate(userId)) {
+    res.statusCode = STATUS_CODE.bad_request;
+    res.end(JSON.stringify({ message: MESSAGE.invalid_uuid }));
+  } else {
+    const userIndex = users.findIndex((u) => u.id === userId);
+
+    if (userIndex === -1) {
+      res.statusCode = STATUS_CODE.not_found;
+      res.end(JSON.stringify({ message: MESSAGE.user_not_found }));
+    } else {
+      let body = '';
+
+      req.on('data', (chunk) => {
+        body += chunk;
+      });
+
+      req.on('end', () => {
+        try {
+          const { username, age, hobbies } = JSON.parse(body) as {
+            username: string;
+            age: number;
+            hobbies: string[];
+          };
+
+          if (!username || !age || !hobbies) {
+            res.statusCode = STATUS_CODE.bad_request;
+            res.end(JSON.stringify({ message: MESSAGE.bad_request }));
+          } else {
+            const updatedUser: IUser = { id: userId, username, age, hobbies };
+            users[userIndex] = updatedUser;
+
+            res.statusCode = STATUS_CODE.success;
+            res.end(JSON.stringify(updatedUser));
+          }
+        } catch (error) {
+          res.statusCode = STATUS_CODE.bad_request;
+          res.end(
+            JSON.stringify({
+              message:
+                error instanceof Error ? error.name : MESSAGE.internal_error,
+            })
+          );
+        }
+      });
+    }
+  }
 }
 
 export function urlNotFound(req: IncomingMessage, res: ServerResponse) {

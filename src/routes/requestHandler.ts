@@ -4,6 +4,7 @@ import {
   getUsers,
   createUser,
   getUserById,
+  updateUser,
 } from '../controllers/userController';
 import { URL, METHOD } from '../data/constants';
 
@@ -19,6 +20,9 @@ export function handleRequest(req: IncomingMessage, res: ServerResponse) {
     getUserById(req, res, userId);
   } else if (url && url === URL.users && method === METHOD.post) {
     createUser(req, res);
+  } else if (url && url.startsWith(URL.user_id) && method === METHOD.put) {
+    const userId = url.split('/').pop();
+    updateUser(req, res, userId);
   } else {
     urlNotFound(req, res);
   }
